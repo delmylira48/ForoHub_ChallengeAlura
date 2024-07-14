@@ -7,6 +7,7 @@ import com.delmylira48.foroHub.ForoHub.domain.manejousuarios.usuario.UsuarioDTO;
 import com.delmylira48.foroHub.ForoHub.domain.manejousuarios.usuario.UsuarioLessDTO;
 import com.delmylira48.foroHub.ForoHub.domain.manejousuarios.usuario.UsuarioService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +26,7 @@ public class ManejoUsuarioController {
 
     @PostMapping
     @Transactional
-    public DetallesRegistroUserPerfilDTO agregarUsuarioNuevo2(@RequestBody RegistroUsuarioPerfilDTO body){
+    public DetallesRegistroUserPerfilDTO agregarUsuarioNuevo2(@RequestBody @Valid RegistroUsuarioPerfilDTO body){
         return usuarioPerfilService.agregarUsuario(body);
     }
 

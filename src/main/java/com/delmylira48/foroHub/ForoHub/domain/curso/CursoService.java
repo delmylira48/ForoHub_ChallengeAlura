@@ -1,5 +1,6 @@
 package com.delmylira48.foroHub.ForoHub.domain.curso;
 
+import com.delmylira48.foroHub.ForoHub.infra.errores.ValidacionDeIntegridad;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,7 +19,7 @@ public class CursoService {
         Curso curso;
         var opcionalCurso = cursoRepository.findByNombre(cursoDTO.nombre());
         if(opcionalCurso.isPresent()){
-            throw new RuntimeException("Ya existe el curso");
+            throw  new ValidacionDeIntegridad("ya existe el curso");
         }else{
             curso = new Curso(cursoDTO);
             cursoRepository.save(curso);

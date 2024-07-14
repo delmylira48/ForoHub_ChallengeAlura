@@ -4,10 +4,12 @@ import com.delmylira48.foroHub.ForoHub.domain.curso.Curso;
 import com.delmylira48.foroHub.ForoHub.domain.curso.ICursoRepository;
 import com.delmylira48.foroHub.ForoHub.domain.manejousuarios.usuario.IUsuarioRepository;
 import com.delmylira48.foroHub.ForoHub.domain.manejousuarios.usuario.Usuario;
+import com.delmylira48.foroHub.ForoHub.infra.errores.ValidacionDeIntegridad;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -29,10 +31,10 @@ public class TopicoService {
         var usuario = usuarioRepository.findById(topicoDTO.autor().id());
         var curso = cursoRepository.findById(topicoDTO.curso().id());
         if (!usuario.isPresent()){
-            throw new RuntimeException("Usuario invalido");
+            throw  new ValidacionDeIntegridad("no existe el usuario");
         }
         if (!curso.isPresent()){
-            throw new RuntimeException("Curso invalido");
+            throw  new ValidacionDeIntegridad("no existe el curso");
         }
         Usuario user = usuario.get();
         Curso cursoN = curso.get();
@@ -44,39 +46,39 @@ public class TopicoService {
         return new DetalleTopicoDTO(topico);
     }
 
-    public Page<TopicoDTO> listarTopico(Pageable datos){
+    public ResponseEntity<Page<TopicoDTO>> listarTopico(Pageable datos){
         Page<Topico> topicos = topicoRepository.findAll(datos);
-        return topicos.map(TopicoDTO::new);
+        return ResponseEntity.ok(topicos.map(TopicoDTO::new));
     }
 
-    public DetalleTopicoDTO listarUnTopico( Long id){
+    public ResponseEntity listarUnTopico( Long id){
         var opcionalTopico = topicoRepository.findById(id);
         if (!opcionalTopico.isPresent()){
-            throw  new RuntimeException("no existe el topico");
+            throw  new ValidacionDeIntegridad("no existe el topico");
         }
-        return new DetalleTopicoDTO(opcionalTopico.get());
+        return ResponseEntity.ok(new DetalleTopicoDTO(opcionalTopico.get()));
     }
 
     @Transactional
-    public DetalleTopicoDTO actualizarTopico(ActualizarTopicoDTO actualizarTopicoDTO){
+    public ResponseEntity actualizarTopico(ActualizarTopicoDTO actualizarTopicoDTO){
         var opcionalTopico = topicoRepository.findById(actualizarTopicoDTO.id());
         if (!opcionalTopico.isPresent()){
-            throw  new RuntimeException("no existe el topico");
+            throw  new ValidacionDeIntegridad("no existe el topico");
         }
         Topico topico = topicoRepository.getReferenceById(actualizarTopicoDTO.id());
         topico.actualizarDatos(actualizarTopicoDTO);
-        return new DetalleTopicoDTO(topico);
+        return ResponseEntity.ok(new DetalleTopicoDTO(topico));
 
     }
 
     @Transactional
-    public DetalleTopicoDTO eliminarTopico(Long id) {
+    public ResponseEntity eliminarTopico(Long id) {
         var opcionalTopico = topicoRepository.findById(id);
         if (!opcionalTopico.isPresent()){
-            throw  new RuntimeException("no existe el topico");
+            throw  new ValidacionDeIntegridad("no existe el topico");
         }
         Topico topic = topicoRepository.getReferenceById(id);
         topic.eliminarTopic();
-        return new DetalleTopicoDTO(topic);
+        return ResponseEntity.noContent().build();
     }
 }
